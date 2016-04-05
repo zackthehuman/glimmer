@@ -14,11 +14,13 @@ export function normalizeTextValue(value: Opaque): string {
 }
 
 abstract class UpdatingContentOpcode extends UpdatingOpcode {
-  public type: string;
-  public next = null;
-  public prev = null;
+  protected cache: ReferenceCache<string>;
 
-  abstract evaluate(vm: UpdatingVM);
+  constructor(cache: ReferenceCache<string>) {
+    super();
+    this.cache = cache;
+    this.tag = cache.tag;
+  }
 }
 
 export class AppendOpcode extends Opcode {
@@ -47,12 +49,10 @@ export class AppendOpcode extends Opcode {
 
 export class UpdateAppendOpcode extends UpdatingContentOpcode {
   type = 'update-append';
-  private cache: ReferenceCache<string>;
   private textNode: Text;
 
   constructor(cache: ReferenceCache<string>, textNode: Text) {
-    super();
-    this.cache = cache;
+    super(cache);
     this.textNode = textNode;
   }
 
@@ -98,12 +98,10 @@ export class TrustingAppendOpcode extends Opcode {
 
 export class UpdateTrustingAppendOpcode extends UpdatingContentOpcode {
   type = 'update-trusting-append';
-  private cache: ReferenceCache<string>;
   private bounds: Fragment;
 
   constructor(cache: ReferenceCache<string>, bounds: Fragment) {
-    super();
-    this.cache = cache;
+    super(cache);
     this.bounds = bounds;
   }
 

@@ -1,5 +1,5 @@
 import Reference, { PathReference } from './reference';
-import { InternedString, Opaque } from 'glimmer-util';
+import { InternedString, Opaque, Slice, LinkedListNode } from 'glimmer-util';
 
 //////////
 
@@ -55,6 +55,23 @@ export function combineTagged(tagged: Tagged<Revision>[]): RevisionTag {
     if (tag === CONSTANT_TAG) continue;
     if (tag === VOLATILE_TAG) return VOLATILE_TAG;
     optimized.push(tag);
+  }
+
+  return _combine(optimized);
+}
+
+export function combineSlice(slice: Slice<Tagged<Revision> & LinkedListNode>): RevisionTag {
+  let optimized = [];
+
+  let node = slice.head();
+
+  while(node !== null) {
+    let tag = node.tag;
+    if (tag === CONSTANT_TAG) continue;
+    if (tag === VOLATILE_TAG) return VOLATILE_TAG;
+    optimized.push(tag);
+
+    node = slice.nextNode(node);
   }
 
   return _combine(optimized);
@@ -255,13 +272,16 @@ export function map<T, U>(reference: VersionedReference<T>, mapper: Mapper<T, U>
 
 //////////
 
-export class ReferenceCache<T> {
+export class ReferenceCache<T> implements Tagged<Revision> {
+  public tag: RevisionTag;
+
   private reference: VersionedReference<T>;
   private lastValue: T = null;
   private lastRevision: Revision = null;
   private initialized: boolean = false;
 
   constructor(reference: VersionedReference<T>) {
+    this.tag = reference.tag;
     this.reference = reference;
   }
 
