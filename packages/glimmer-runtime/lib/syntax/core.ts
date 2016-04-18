@@ -250,7 +250,7 @@ class HelperInvocationReference implements Reference<Insertion> {
 
   value(): Insertion {
     let { args: { positional, named } }  = this;
-    return this.helper.call(undefined, positional.value(), named.value(), null);
+    return this.helper.call(undefined, positional.value(), named.value(), null).value();
   }
 }
 
