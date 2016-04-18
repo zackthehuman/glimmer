@@ -145,8 +145,13 @@ export class Block extends StatementSyntax {
     return this;
   }
 
-  compile(ops: CompileInto) {
-    throw new Error("SyntaxError");
+  compile(ops: CompileInto, env: Environment) {
+   env.assert(
+     !env.hasHelper(this.path),
+     "Helpers may not be used in the block form, for example {{#my-helper}}{{/my-helper}}. Please use a component, or alternatively use the helper in combination with a built-in Ember helper, for example {{#if (my-helper)}}{{/if}}."
+   );
+
+   throw new Error("SyntaxError");
   }
 
   prettyPrint() {
@@ -912,6 +917,7 @@ export class Helper extends ExpressionSyntax<Opaque> {
   }
 
   compile(compiler: SymbolLookup, env: Environment): CompiledExpression<Opaque> {
+    debugger;
     if (env.hasHelper(this.ref.parts)) {
       let { args, ref } = this;
       return new CompiledHelper<Opaque>({ name: ref.parts, helper: env.lookupHelper(ref.parts), args: args.compile(compiler, env) });

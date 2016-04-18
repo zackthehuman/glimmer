@@ -196,6 +196,8 @@ export abstract class Environment {
   abstract lookupHelper(helperName: InternedString[]): Helper;
   abstract hasComponentDefinition(tagName: InternedString[]): boolean;
   abstract getComponentDefinition(tagName: InternedString[]): ComponentDefinition<Opaque>;
+
+  abstract assert(test: boolean, message: string): void;
 }
 
 export default Environment;
@@ -231,7 +233,8 @@ function parseStatement(statement: StatementSyntax): ParsedStatement {
     let type = statement.type;
     let block = type === 'block' ? <Syntax.Block>statement : null;
     let append = type === 'append' ? <Syntax.Append>statement : null;
-
+console.log('parseStatement');
+console.log(statement);
     let named: Syntax.NamedArgs;
     let args: Syntax.Args;
     let path: InternedString[];
