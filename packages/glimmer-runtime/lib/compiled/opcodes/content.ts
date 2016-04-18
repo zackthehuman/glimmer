@@ -140,7 +140,7 @@ export class UpdateCautiousAppendOpcode extends UpdatingContentOpcode {
       if (isSafeString(value)) {
         this.textNode = null;
         let nextSibling = clear(this.bounds);
-        this.bounds.update(vm.dom.insertHTMLBefore(parent, nextSibling, value));
+        this.bounds.update(vm.dom.insertHTMLBefore(parent, nextSibling, value.toHTML()));
       } else {
         if(this.textNode) {
           this.textNode.nodeValue = value;
