@@ -39,15 +39,18 @@ export class AppendOpcode extends Opcode {
     let mapped = map(reference, normalizeTextOrTrustedValue);
     let cache = new ReferenceCache(mapped);
     let value = cache.peek();
+    let isTrusted = isSafeString(value);
 
-    if (isSafeString(value)) {
-      let bounds = vm.stack().insertHTMLBefore(null, value.toHTML());
-      vm.updateWith(new UpdateCautiousAppendOpcode(cache, bounds, null));
+    if (isTrusted) {
+      let bounds = vm.stack().insertHTMLBefore(null, (value as SafeString).toHTML());
+
+      if (!isConst(reference)) {
+        vm.updateWith(new UpdateCautiousAppendOpcode(cache, bounds, null));
+      }
     } else {
-      if (isConst(reference)) {
-        vm.stack().appendText(value);
-      } else {
-        let bounds = vm.stack().insertTextBefore(null, value);
+      let bounds = vm.stack().insertTextBefore(null, value as string);
+
+      if (!isConst(reference)) {
         vm.updateWith(new UpdateCautiousAppendOpcode(cache, bounds, bounds.firstNode() as Text));
       }
     }
