@@ -193,6 +193,39 @@ test("updating a curly with a safe and unsafe string", () => {
   equalTokens(root, '<div><p>hello world</p></div>', "original input causes no problem");
 });
 
+test("updating a triple curly with a safe and unsafe string", () => {
+  let safeString: string | SafeString = {
+    string: '<p>hello world</p>',
+    toHTML: function () { return this.string; },
+    toString: function () { return this.string; }
+  } as SafeString;
+  let unsafeString = '<b>Big old world!</b>';
+  let object = {
+    value: safeString
+  };
+  let template = compile('<div>{{{value}}}</div>');
+  render(template, object);
+  let valueNode = root.firstChild.firstChild.firstChild;
+
+  equalTokens(root, '<div><p>hello world</p></div>', "Initial render");
+
+  rerender();
+
+  equalTokens(root, '<div><p>hello world</p></div>', "no change");
+  strictEqual(root.firstChild.firstChild.firstChild, valueNode, "The nodes were not blown away");
+
+  object.value = unsafeString;
+  rerender();
+
+  equalTokens(root, '<div><b>Big old world!</b></div>', "Normal strings may contain HTML");
+  notStrictEqual(root.firstChild.firstChild.firstChild, valueNode, "The nodes were blown away");
+
+  object.value = safeString;
+  rerender();
+
+  equalTokens(root, '<div><p>hello world</p></div>', "original input causes no problem");
+});
+
 test("dynamically scoped keywords can be passed to render, and used in curlies", assert => {
   let template = compile("{{view.name}}");
   let view = { name: 'Godfrey' };
