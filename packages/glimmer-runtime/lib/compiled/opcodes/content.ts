@@ -68,9 +68,10 @@ export class TrustingAppendOpcode extends Opcode {
   evaluate(vm: VM) {
     let reference = vm.frame.getOperand();
 
-    let mapped = map(reference, normalizeTextValue);
+    let mapped = map(reference, normalizeTextOrTrustedValue);
     let cache = new ReferenceCache(mapped);
-    let bounds = vm.stack().insertHTMLBefore(null, cache.peek());
+    let value = cache.peek();
+    let bounds = vm.stack().insertHTMLBefore(null, isSafeString(value) ? value.toHTML() : value);
 
     if (!isConst(reference)) {
       vm.updateWith(new UpdateTrustingAppendOpcode(cache, bounds));
@@ -88,10 +89,10 @@ export class TrustingAppendOpcode extends Opcode {
 
 export class UpdateTrustingAppendOpcode extends UpdatingContentOpcode {
   type = 'update-trusting-append';
-  private cache: ReferenceCache<string>;
+  private cache: ReferenceCache<Insertion>;
   private bounds: Fragment;
 
-  constructor(cache: ReferenceCache<string>, bounds: Fragment) {
+  constructor(cache: ReferenceCache<Insertion>, bounds: Fragment) {
     super();
     this.cache = cache;
     this.bounds = bounds;
@@ -103,7 +104,7 @@ export class UpdateTrustingAppendOpcode extends UpdatingContentOpcode {
     if (isModified(value)) {
       let parent = <HTMLElement>this.bounds.parentElement();
       let nextSibling = clear(this.bounds);
-      this.bounds.update(vm.dom.insertHTMLBefore(parent, nextSibling, value));
+      this.bounds.update(vm.dom.insertHTMLBefore(parent, nextSibling, isSafeString(value) ? value.toHTML() : value));
     }
   }
 
