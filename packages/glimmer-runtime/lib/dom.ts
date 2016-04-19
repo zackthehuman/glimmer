@@ -115,10 +115,10 @@ class DOMHelper {
     return new ConcreteBounds(parent, first, last);
   }
 
-  insertTextBefore(parent: Element, nextSibling: Node, text: string): Bounds {
+  insertTextBefore(parent: Element, nextSibling: Node, text: string): Text {
     let textNode = this.createTextNode(text);
     this.insertBefore(parent, textNode, nextSibling);
-    return new SingleNodeBounds(parent, textNode);
+    return textNode;
   }
 
   insertBefore(element: Element, node: Node, reference: Node) {

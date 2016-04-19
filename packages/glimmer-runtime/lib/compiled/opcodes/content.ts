@@ -2,7 +2,7 @@ import { Opcode, OpcodeJSON, UpdatingOpcode } from '../../opcodes';
 import { VM, UpdatingVM } from '../../vm';
 import { ReferenceCache, isModified, isConst, map } from 'glimmer-reference';
 import { Opaque, dict } from 'glimmer-util';
-import { Bounds, clear } from '../../bounds';
+import { Bounds, clear, SingleNodeBounds } from '../../bounds';
 import { Fragment } from '../../builder';
 import { Insertion, SafeString, isSafeString } from '../../environment';
 
@@ -147,8 +147,8 @@ export class UpdateCautiousAppendOpcode extends UpdatingContentOpcode {
           this.textNode.nodeValue = value;
         } else {
           let nextSibling = clear(this.bounds);
-          this.bounds.update(vm.dom.insertTextBefore(parent, nextSibling, value));
-          this.textNode = this.bounds.firstNode() as Text;
+          let textNode = this.textNode = vm.dom.insertTextBefore(parent, nextSibling, value);
+          this.bounds.update(new SingleNodeBounds(parent, textNode));
         }
       }
     }

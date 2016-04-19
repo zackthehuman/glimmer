@@ -1,4 +1,4 @@
-import Bounds, { clear } from './bounds';
+import Bounds, { clear, SingleNodeBounds } from './bounds';
 
 import { DOMHelper } from './dom';
 
@@ -280,8 +280,8 @@ export class ElementStack {
   }
 
   insertTextBefore(nextSibling: Node, text: string): Fragment {
-    let concreteBounds = this.dom.insertTextBefore(this.element, this.nextSibling, text);
-    let fragmentBounds = new Fragment(concreteBounds);
+    let textNode = this.dom.insertTextBefore(this.element, this.nextSibling, text);
+    let fragmentBounds = new Fragment(new SingleNodeBounds(this.element, textNode));
     this.blockStack.current.newBounds(fragmentBounds);
 
     return fragmentBounds;
