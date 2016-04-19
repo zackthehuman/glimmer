@@ -914,7 +914,7 @@ export class Helper extends ExpressionSyntax<Opaque> {
   compile(compiler: SymbolLookup, env: Environment): CompiledExpression<Opaque> {
     if (env.hasHelper(this.ref.parts)) {
       let { args, ref } = this;
-      return new CompiledHelper<Opaque>({ name: ref.parts, helper: env.lookupHelper(ref.parts), args: args.compile(compiler, env) });
+      return new CompiledHelper({ name: ref.parts, helper: env.lookupHelper(ref.parts), args: args.compile(compiler, env) });
     } else {
       throw new Error(`Compile Error: ${this.ref.prettyPrint()} is not a helper`);
     }

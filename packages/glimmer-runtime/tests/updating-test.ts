@@ -1,4 +1,4 @@
-import { Template, RenderResult } from "glimmer-runtime";
+import { Template, RenderResult, SafeString } from "glimmer-runtime";
 import { TestEnvironment, TestDynamicScope, equalTokens, stripTight } from "glimmer-test-helpers";
 import { PathReference } from "glimmer-reference";
 import { UpdatableReference } from "glimmer-object-reference";
@@ -161,11 +161,11 @@ test("Cycling between two values in a trusting curly", () => {
 });
 
 test("updating a curly with a safe and unsafe string", () => {
-  let safeString = {
+  let safeString: string | SafeString = {
     string: '<p>hello world</p>',
     toHTML: function () { return this.string; },
     toString: function () { return this.string; }
-  };
+  } as SafeString;
   let unsafeString = '<b>Big old world!</b>';
   let object = {
     value: safeString
